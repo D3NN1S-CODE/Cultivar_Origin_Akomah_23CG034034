@@ -36,6 +36,7 @@
 
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_cors import CORS
 import joblib
 import pandas as pd
 
@@ -67,6 +68,9 @@ if template_folder is None:
 else:
     # Traditional mode: with templates
     app = Flask(__name__, static_folder=static_folder, template_folder=template_folder)
+
+# Enable CORS for API routes so Vercel frontend can call Render backend
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 @app.route('/')
@@ -110,6 +114,16 @@ def index():
     
     # Render template and pass available columns for dynamic form generation
     return render_template('index.html', cols=cols)
+
+
+@app.route('/health', methods=['GET'])
+def health():
+    """
+    Health check endpoint for deployment verification.
+    Returns simple JSON indicating the service is running.
+    """
+    from flask import jsonify
+    return jsonify({"status": "ok"})
 
 
 @app.route('/predict', methods=['POST'])
@@ -238,4 +252,5 @@ if __name__ == '__main__':
     For production deployment, use a WSGI server like Gunicorn instead of 
     Flask's built-in development server.
     """
-    app.run(debug=True, port=5004)
+    port = int(os.environ.get('PORT', 5004))
+    app.run(debug=True, port=port)
