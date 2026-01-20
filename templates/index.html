@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wine Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='src/styles/globals.css') }}" />
+    <style>
+      .card { max-width:900px; margin:28px auto; padding:18px; background: rgba(255,255,255,0.95); border-radius:8px }
+      label { font-weight:600 }
+      textarea { width:100%; height:120px }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Wine Type Quick Classifier</h1>
+      <p>Enter comma-separated feature values matching the model's expected order.</p>
+      <form method="post" action="/predict">
+        <p>Enter values for the model features (one row). The model expects features in the trained order.</p>
+        <div style="max-height:240px;overflow:auto;background:#fff;padding:10px;border-radius:6px">
+          {% if cols %}
+            {% for c in cols %}
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+                <label style="width:220px">{{ c }}</label>
+                <input name="{{ c }}" type="number" step="any" />
+              </div>
+            {% endfor %}
+          {% else %}
+            <p style="color:#666;margin:0">Model columns not available — please run the trainer to create `model_columns.pkl`.</p>
+          {% endif %}
+        </div>
+        <div style="margin-top:8px"><button type="submit">Predict</button></div>
+      </form>
+      {% if result %}
+        <h3>Result: {{ result }}</h3>
+      {% endif %}
+      <div style="margin-top:12px">
+        <img alt="wine-design" src="https://images.unsplash.com/photo-1659353886114-9aa119aef5aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080" style="max-width:100%;border-radius:6px" />
+      </div>
+    </div>
+  </body>
+  </html>
